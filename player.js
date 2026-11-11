@@ -155,7 +155,8 @@
     const song = /\bsing\b|\bsong\b|\bchant\b/i.test(rest + " " + paren);
     let icon = song ? "🎵" : "🎧";
     if (!song) for (const [re, ic] of icons) if (re.test(section)) { icon = ic; break; }
-    const title = song ? `Song: ${paren || section}` : paren ? `${section}: ${paren}` : section;
+    const generic = /^(chant|sing-along|song)$/i.test(paren);
+    const title = song ? (generic ? paren : `Song: ${paren || section}`) : paren ? `${section}: ${paren}` : section;
     return { num, u, unitName, section, letter, song, icon, title, file };
   }
 
