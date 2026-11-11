@@ -123,13 +123,27 @@
   }
 
   // ---------- turn file names into tracks ----------
-  const FIXES = [[/Neighborfood/g, "Neighborhood"], [/Counting Chart/g, "Counting Chant"], [/Ride O Bike/g, "Ride a Bike"]];
+  const FIXES = [[/Neighborfood/g, "Neighborhood"], [/Counting Chart/g, "Counting Chant"], [/Ride O Bike/g, "Ride a Bike"],
+                 [/Campasite/g, "Campsite"], [/What Aer You/g, "What Are You"]];
   const tidy = s => FIXES.reduce((a, [re, r]) => a.replace(re, r),
     s.replace(/_(?=(s|re|t|ll|m|ve|d)\b)/gi, "'").replace(/_$/, "?").replace(/_/g, "/").trim());
   const icons = [[/conversation/i, "💬"], [/word/i, "🔤"], [/practice/i, "✏️"], [/phonics/i, "🔊"], [/story|reading/i, "📖"], [/review/i, "🔁"]];
+  // Short style used by some levels: "01 At The Campsite.mp3", "02 Word.mp3", "03 Practice.mp3",
+  // "04 Song Title.mp3", "05 Phonics.mp3" — every 5 files are one unit.
+  function parseShort(file) {
+    const m = file.match(/^(\d+)\s+(.*?)(?:\s+\d)?\.mp3$/i);
+    if (!m) return null;
+    const num = +m[1], u = Math.ceil(num / 5), k = (num - 1) % 5, name = tidy(m[2]);
+    const base = { num, u, unitName: "", letter: "", file };
+    if (/^word$/i.test(name)) return { ...base, section: "Word Time", song: false, icon: "🔤", title: "Word Time" };
+    if (/^practice$/i.test(name)) return { ...base, section: "Practice Time", song: false, icon: "✏️", title: "Practice Time" };
+    if (/^phonics$/i.test(name)) return { ...base, section: "Phonics Time", song: false, icon: "🔊", title: "Phonics Time" };
+    if (k === 0) return { ...base, unitName: name, section: "Conversation Time", song: false, icon: "💬", title: "Conversation Time" };
+    return { ...base, section: "Song", song: true, icon: "🎵", title: `Song: ${name}` };
+  }
   function parse(file) {
     const m = file.match(/^(\d+)\s+Unit\s+(\d+)\s+(.*)\.mp3$/i);
-    if (!m) return null;
+    if (!m) return parseShort(file);
     const num = +m[1], u = +m[2];
     let rest = m[3], paren = "";
     const pm = rest.match(/\(([^)]*)\)\s*$/) || rest.match(/\((.*)\)\s*$/);
