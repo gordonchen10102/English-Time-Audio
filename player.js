@@ -5,6 +5,7 @@
 (function () {
   // Colours match each Student Book cover.
   const PALETTE = {
+    0: { btn: "#34495e", headDark: "#a9b8c8", soft: "#e6eaef", softDark: "#2a2f36", song: "#c2571a" }, // start page
     1: { btn: "#2563a8", headDark: "#7fb3ec", soft: "#e3eefa", softDark: "#1f2c3b", song: "#c2571a" }, // blue
     2: { btn: "#c22a45", headDark: "#f28d9b", soft: "#fbe4e8", softDark: "#3c2228", song: "#2563a8" }, // red
     3: { btn: "#2e8540", headDark: "#7fd08b", soft: "#e2f3e4", softDark: "#1f3323", song: "#c2571a" }, // green
@@ -12,7 +13,10 @@
     5: { btn: "#c84f14", headDark: "#f5a06a", soft: "#fdeadf", softDark: "#3d2a1f", song: "#2563a8" }, // orange
     6: { btn: "#0f7c80", headDark: "#6fd0d3", soft: "#dff3f3", softDark: "#1d3536", song: "#c2571a" }  // teal
   };
-  const L = Object.assign({}, window.LEVEL, PALETTE[window.LEVEL.n] || {});
+  const L = Object.assign({}, window.LEVEL, PALETTE[window.LEVEL.n || 0] || {});
+  const BOOKS = [[1, 12], [2, 12], [3, 12], [4, 12], [5, 10], [6, 10]];
+  // Passcode check (stored as a hash, remembered on each device once entered).
+  const PASS_HASH = "c570baa958a5ca0b0aa22d4e58a240f7876ce19b2afe538bed626f07db577849";
   const css = `
   :root { --bg:#f7f5ef; --card:#fff; --text:#222; --muted:#666; --btn:${L.btn}; --head:${L.btn}; --soft:${L.soft}; --song:${L.song}; }
   @media (prefers-color-scheme: dark) {
@@ -20,7 +24,20 @@
   }
   * { box-sizing:border-box; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); padding-bottom:150px; }
-  header { background:var(--btn); color:#fff; padding:22px 16px 20px; text-align:center; }
+  header { background:var(--btn); color:#fff; padding:18px 16px 20px; text-align:center; }
+  .back { display:inline-block; margin-bottom:8px; color:#fff; text-decoration:none; font-size:.9rem; background:rgba(255,255,255,.18); padding:6px 12px; border-radius:999px; }
+  .lead { text-align:center; color:var(--muted); margin:6px 0 16px; font-size:1.05rem; }
+  .books { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .book { display:block; text-decoration:none; color:#fff; border-radius:18px; padding:18px 12px 16px; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,.15); }
+  .book .badge { width:60px; height:60px; font-size:2.1rem; }
+  .book b { display:block; font-size:1.15rem; margin-top:10px; }
+  .book small { display:block; opacity:.92; margin-top:2px; }
+  .gate { max-width:360px; margin:28px auto; background:var(--card); border-radius:18px; padding:24px 20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,.1); }
+  .gate h2 { margin:0 0 6px; font-size:1.3rem; }
+  .gate p { color:var(--muted); margin:0 0 16px; }
+  .gate input { width:100%; font-size:1.7rem; letter-spacing:.4em; text-align:center; padding:12px; border-radius:12px; border:2px solid var(--btn); background:var(--bg); color:var(--text); }
+  .gate button { margin-top:12px; width:100%; padding:14px; font-size:1.1rem; font-weight:700; border:0; border-radius:12px; background:var(--btn); color:#fff; cursor:pointer; }
+  .gate .err { color:#e0414f; min-height:1.4em; margin-top:10px; font-weight:600; }
   h1 { margin:0 0 6px; font-size:1.9rem; color:#fff; display:flex; align-items:center; justify-content:center; gap:10px; }
   .badge { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:50%;
            background:#fff; color:var(--btn); font-size:1.7rem; font-weight:800; box-shadow:0 2px 6px rgba(0,0,0,.2); }
@@ -55,10 +72,13 @@
   .msg { text-align:center; color:var(--muted); padding:40px 16px; font-size:1.05rem; }
   footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }`;
   document.head.insertAdjacentHTML("beforeend", `<style>${css}</style>`);
-  document.title = `English Time ${L.n} Audio`;
+  document.title = L.start ? "English Time Audio" : `English Time ${L.n} Audio`;
+  document.head.insertAdjacentHTML("beforeend", `<meta name="robots" content="noindex, nofollow">`);
   document.head.insertAdjacentHTML("beforeend", `<meta name="theme-color" content="${L.btn}">`);
   document.body.innerHTML = `
-  <header><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practise at home 🎧</p></header>
+  <header>${L.start
+      ? `<h1>English Time 🎧</h1><p>Audio for listening at home</p>`
+      : `<a class="back" href="${L.home || "../"}">← All levels</a><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practise at home 🎧</p>`}</header>
   <main id="main"><div class="msg">Loading…</div></main>
   <footer>For students and parents of our class</footer>
   <div class="bar" id="bar"><div class="inner">
@@ -70,7 +90,9 @@
   const owner = location.hostname.split(".")[0];
   const parts = location.pathname.split("/").filter(Boolean);
   const repo = parts[0];
-  const folder = parts[1] && !parts[1].endsWith(".html") ? parts[1] : "";
+  // L.audio lets a page read its audio from another folder ("" = the main folder).
+  const folder = L.audio !== undefined ? L.audio : (parts[1] && !parts[1].endsWith(".html") ? parts[1] : "");
+  const prefix = L.audio !== undefined ? "../" + (L.audio ? L.audio + "/" : "") : "";
 
   // ---------- file list ----------
   async function listFiles() {
@@ -129,7 +151,7 @@
   function play(list, start, label) { queue = list; pos = start || 0; queueName = label; load(); }
   function load() {
     const t = queue[pos];
-    player.src = encodeURIComponent(t.file);
+    player.src = prefix + encodeURIComponent(t.file);
     player.play().catch(() => {});
     bar.classList.add("show");
     document.getElementById("label").textContent = queue.length > 1 ? `${queueName} — ${pos + 1} of ${queue.length}` : queueName;
@@ -144,7 +166,42 @@
     return n === 10 ? [[1, 3], [4, 6], [7, 8], [9, 10]] : [[1, 3], [4, 6], [7, 9], [10, 12]];
   }
 
-  // ---------- build page ----------
+  // ---------- start page ----------
+  function renderStart() {
+    const main = document.getElementById("main");
+    main.innerHTML = `<p class="lead">Tap the book your child uses.</p><div class="books">${BOOKS.map(([n, u]) =>
+      `<a class="book" href="level-${n}/" style="background:${PALETTE[n].btn}">
+         <span class="badge" style="color:${PALETTE[n].btn}">${n}</span>
+         <b>English Time ${n}</b><small>Units 1–${u}</small></a>`).join("")}</div>`;
+  }
+
+  // ---------- passcode ----------
+  async function sha(text) {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+  }
+  function unlocked() { try { return localStorage.getItem("et-pass") === PASS_HASH; } catch (e) { return false; } }
+  function gate(next) {
+    const main = document.getElementById("main");
+    main.innerHTML = `<form class="gate" id="gate"><h2>🔒 Class passcode</h2><p>Please enter the passcode from your teacher.</p>
+      <input id="code" type="password" inputmode="numeric" autocomplete="off" aria-label="Passcode" required>
+      <button type="submit">Enter</button><div class="err" id="err"></div></form>`;
+    const code = document.getElementById("code");
+    code.focus();
+    document.getElementById("gate").onsubmit = async e => {
+      e.preventDefault();
+      if (await sha("english-time:" + code.value.trim()) === PASS_HASH) {
+        try { localStorage.setItem("et-pass", PASS_HASH); } catch (err) {}
+        next();
+      } else {
+        document.getElementById("err").textContent = "That passcode isn't right. Please try again.";
+        code.value = ""; code.focus();
+      }
+    };
+  }
+
+  // ---------- level page ----------
+  function renderLevel() {
   listFiles().then(files => {
     const main = document.getElementById("main");
     if (files === null) { main.innerHTML = `<div class="msg">Couldn't load the list of tracks. Please refresh the page in a minute.</div>`; return; }
@@ -190,4 +247,8 @@
     units.forEach(u => { const b = document.createElement("button"); b.textContent = `Unit ${u}`; b.dataset.u = u; b.onclick = () => show(u); unitsEl.appendChild(b); });
     show(units[0]);
   });
+  }
+
+  const go = L.start ? renderStart : renderLevel;
+  if (unlocked()) go(); else gate(go);
 })();
