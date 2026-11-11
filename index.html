@@ -5,71 +5,136 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>English Time 1 Audio</title>
 <style>
-  :root { --bg:#f7f5ef; --card:#fff; --text:#222; --muted:#666; --accent:#2f7d5b; --soft:#e6f2ec; }
+  :root { --bg:#f7f5ef; --card:#fff; --text:#222; --muted:#666; --accent:#2f7d5b; --soft:#e6f2ec; --song:#c2571a; --songsoft:#fbe9dd; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#1b1d1c; --card:#262927; --text:#eee; --muted:#aaa; --accent:#5cc49a; --soft:#2d3a33; }
+    :root { --bg:#1b1d1c; --card:#262927; --text:#eee; --muted:#aaa; --accent:#5cc49a; --soft:#2d3a33; --song:#f09a5e; --songsoft:#3d2c21; }
   }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
-  header { padding:28px 16px 8px; text-align:center; }
-  h1 { margin:0 0 6px; font-size:1.8rem; color:var(--accent); }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); padding-bottom:150px; }
+  header { padding:24px 16px 4px; text-align:center; }
+  h1 { margin:0 0 4px; font-size:1.8rem; color:var(--accent); }
   header p { margin:0; color:var(--muted); }
   main { max-width:720px; margin:0 auto; padding:16px; }
-  .units { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
-  .units button { border:0; border-radius:999px; padding:8px 14px; font-size:.95rem; cursor:pointer;
-                  background:var(--soft); color:var(--text); }
+  .quick { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  .quick h2 { margin:0 0 4px; font-size:1.2rem; color:var(--text); }
+  .quick p { margin:0 0 12px; color:var(--muted); font-size:.95rem; }
+  .qgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .qbtn { border:0; border-radius:14px; padding:16px 10px; font-size:1.1rem; font-weight:600; cursor:pointer;
+          background:var(--accent); color:#fff; line-height:1.3; }
+  .qbtn small { display:block; font-weight:400; font-size:.8rem; opacity:.9; }
+  .qbtn.songs { grid-column:1 / -1; background:var(--song); font-size:1.25rem; }
+  .qbtn.all { grid-column:1 / -1; background:var(--soft); color:var(--text); }
+  h3 { font-size:1.1rem; margin:28px 0 10px; color:var(--accent); }
+  .units { display:flex; flex-wrap:wrap; gap:8px; }
+  .units button { border:0; border-radius:999px; padding:8px 14px; font-size:.95rem; cursor:pointer; background:var(--soft); color:var(--text); }
   .units button.on { background:var(--accent); color:#fff; }
-  h2 { font-size:1.15rem; margin:22px 0 10px; color:var(--accent); }
-  .track { background:var(--card); border-radius:12px; padding:12px 14px; margin-bottom:10px;
-           box-shadow:0 1px 3px rgba(0,0,0,.08); }
-  .row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .row span { font-size:1rem; }
-  .play { border:0; border-radius:10px; padding:8px 14px; background:var(--accent); color:#fff;
-          font-size:.95rem; cursor:pointer; white-space:nowrap; }
-  iframe { width:100%; height:160px; border:0; margin-top:10px; border-radius:8px; }
+  .uhead { font-size:1.05rem; margin:20px 0 8px; color:var(--accent); font-weight:600; }
+  .track { display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card); border-radius:12px;
+           padding:10px 14px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,.08); border:2px solid transparent; }
+  .track.song { background:var(--songsoft); }
+  .track.now { border-color:var(--accent); }
+  .track button { border:0; border-radius:10px; padding:8px 14px; background:var(--accent); color:#fff; font-size:.95rem; cursor:pointer; white-space:nowrap; }
+  .bar { position:fixed; left:0; right:0; bottom:0; background:var(--card); box-shadow:0 -2px 10px rgba(0,0,0,.15); padding:10px 16px 14px; display:none; }
+  .bar.show { display:block; }
+  .bar .inner { max-width:720px; margin:0 auto; }
+  .bar .label { font-size:.85rem; color:var(--muted); }
+  .bar .title { font-weight:600; margin:2px 0 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar .ctrls { display:flex; align-items:center; gap:8px; }
+  .bar .ctrls button { border:0; border-radius:10px; width:44px; height:40px; font-size:1.1rem; background:var(--soft); color:var(--text); cursor:pointer; }
+  .bar audio { flex:1; min-width:0; height:40px; }
   footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }
 </style>
 </head>
 <body>
 <header>
   <h1>English Time 1 🎧</h1>
-  <p>Choose a unit, then tap Play</p>
+  <p>Listen and practise at home</p>
 </header>
 <main>
+  <section class="quick">
+    <h2>▶ Quick Play</h2>
+    <p>Tap one button. Everything plays one after another.</p>
+    <div class="qgrid">
+      <button class="qbtn songs" data-q="songs">🎵 All Songs<small>12 songs</small></button>
+      <button class="qbtn" data-q="1-3">Units 1–3<small>15 tracks</small></button>
+      <button class="qbtn" data-q="4-6">Units 4–6<small>15 tracks</small></button>
+      <button class="qbtn" data-q="7-9">Units 7–9<small>15 tracks</small></button>
+      <button class="qbtn" data-q="10-12">Units 10–12<small>15 tracks</small></button>
+      <button class="qbtn all" data-q="all">Play Everything<small>all 60 tracks</small></button>
+    </div>
+  </section>
+
+  <h3>Or choose one track</h3>
   <div class="units" id="units"></div>
   <div id="list"></div>
 </main>
 <footer>For students and parents of our class</footer>
+
+<div class="bar" id="bar">
+  <div class="inner">
+    <div class="label" id="label"></div>
+    <div class="title" id="nowTitle"></div>
+    <div class="ctrls">
+      <button id="prev" aria-label="Previous">⏮</button>
+      <audio id="player" controls></audio>
+      <button id="next" aria-label="Next">⏭</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const data = [{"unit": 1, "name": "In the Neighborhood", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1DPPtZN5U-5ziUOvKztOKli-d6YNU5yVm"}, {"icon": "🔤", "title": "Word Time", "id": "19fOqfHY21mEtnKnRcOCuCsRecEGUXECG"}, {"icon": "✏️", "title": "Practice Time", "id": "17ltUcRGhzmVrSbrNKA3w8wW9VcX0QQsJ"}, {"icon": "🎵", "title": "Song: The Ted and Annie Song", "id": "1VnPu-69-BzG6wsh1k6RhkuIMx4bG_7Rh"}, {"icon": "🔊", "title": "Phonics Time", "id": "1YSW1pE6WwT_sMCZTP93Sv7kAS8gLuyhI"}]}, {"unit": 2, "name": "In the Meadow", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1UMjToMn_KOwFaFhHltgfrnC1pSdjNIK_"}, {"icon": "🔤", "title": "Word Time", "id": "1euykAW6LkSNNj1R57UBL0mA6anE4GfKz"}, {"icon": "✏️", "title": "Practice Time", "id": "14Kb92rYoXsVeIdZ3_6K7q6fiNKbesuBm"}, {"icon": "🎵", "title": "Song: This Is a Flower", "id": "1aCKypyqHXX5SIiaGqNJSRCisBJvxQRtO"}, {"icon": "🔊", "title": "Phonics Time", "id": "1sbj0rVrqbcXiZagmtjcKH9xH7QJHA2FP"}]}, {"unit": 3, "name": "On the Farm", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1iGfICS42OS3ysYDFMUtvA3BKFmZ6EK7i"}, {"icon": "🔤", "title": "Word Time", "id": "1cle12DrLsC9pxXdHQ9DN79mDXMXd4MdS"}, {"icon": "✏️", "title": "Practice Time", "id": "1NtaYhY1vLjPt6r1t6geHDCstnaYAPm_l"}, {"icon": "🎵", "title": "Song: What's This?", "id": "1Cz3gde8MQxLPiZLslHLYUjJPxXKSw8qG"}, {"icon": "🔊", "title": "Phonics Time", "id": "1aQTPQozDTikuMCDV3wOsio9ZP4aHPWLN"}]}, {"unit": 4, "name": "At the Stationery Store", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "10lbrU5xAxkIT4JgprGp_Vjx0ieMkjKFi"}, {"icon": "🔤", "title": "Word Time", "id": "1wrGYWn_Ri7JIPu2muaghDp_uDERbCSw1"}, {"icon": "✏️", "title": "Practice Time", "id": "1zwS7DQyvfVDS0iwdXI4WuHDlzgqWo2H9"}, {"icon": "🎵", "title": "Song: Thanks. You're Welcome.", "id": "1nUUfckyCuDP-MthAvbGNbePczdipPR_A"}, {"icon": "🔊", "title": "Phonics Time", "id": "1k3zcDqxSkoJC-RDxCVLZKb-eqmGTLk2T"}]}, {"unit": 5, "name": "At School", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1u6mLVrlNSev3bAVIMG5KZ-MPisIbOIfM"}, {"icon": "🔤", "title": "Word Time", "id": "1JHnTkk5C6gortccpC2JorWcgX3RwfEEB"}, {"icon": "✏️", "title": "Practice Time", "id": "1uDyNG1dspUuRHe5UpNOVsE4-yjH_Ryuk"}, {"icon": "🎵", "title": "Song: The Counting Chant", "id": "1ZRqt7CskkXxZrMVd4v1JI2ECZyOx55I8"}, {"icon": "🔊", "title": "Phonics Time", "id": "1T2jRqPr3RyiPxL7sXGjM-vUJLUm8NLuK"}]}, {"unit": 6, "name": "In Gym Class", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1kwWGOQaXInVPPFDepnq7pcUZs_9cwz_K"}, {"icon": "🔤", "title": "Word Time", "id": "1jxVjUkHzlI-I1oV0xcZDJO8TWetl3iPW"}, {"icon": "✏️", "title": "Practice Time", "id": "1pdKD-Ivgc-MnqdtXvkO41YUZ9S3QN8kk"}, {"icon": "🎵", "title": "Song: Are You Happy?", "id": "13VYvASJZ6L6CL4tJr695CyJkivImtMYl"}, {"icon": "🔊", "title": "Phonics Time", "id": "1dt5EHR6JNGXyJ1vrgfDZaDxmy8b83cFr"}]}, {"unit": 7, "name": "At the Food Court", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1OSUhB3drFuKy8BLCHhhGjpB2VwO0oN-K"}, {"icon": "🔤", "title": "Word Time", "id": "1_UqcBZihB-VkkTDsHGxJX0FTpwGHih-K"}, {"icon": "✏️", "title": "Practice Time", "id": "1VBANkwuxcOEfsd2XQtP8BVHudaW3mZPd"}, {"icon": "🎵", "title": "Song: I Like Pizza", "id": "13SoXkSd2883HewDxcx5rfgSgyGYmjJDF"}, {"icon": "🔊", "title": "Phonics Time", "id": "1x7FitagChITy_x5Nj2VweDZWbClVRuo_"}]}, {"unit": 8, "name": "At the Supermarket", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1tUFo4z2sOMtbYzhyOIhwhWgfSJ3c_6Bt"}, {"icon": "🔤", "title": "Word Time", "id": "1rfyWUWHGlr1socRJYcbFob5xvMUWUfSx"}, {"icon": "✏️", "title": "Practice Time", "id": "1OsivVjuo7iK6J2DGbFjD1_hYFcz8JMQx"}, {"icon": "🎵", "title": "Song: Yum! Yum! Yum!", "id": "1sD4Pb8nygsX2l2Cd9fq-0IAvSBps2oWU"}, {"icon": "🔊", "title": "Phonics Time", "id": "1jutvH4qCzVt9D44lmlqJ5bydDRTA394s"}]}, {"unit": 9, "name": "At the Circus", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1FWa-zn_kklXEqxK4aH4dx8-6MvC1Rc6k"}, {"icon": "🔤", "title": "Word Time", "id": "1ADe1QHfsbXByWtw7R-M9QFOzlWWmhewT"}, {"icon": "✏️", "title": "Practice Time", "id": "1OJNz5hagod29dA3yQAD0jZja4rGx18H0"}, {"icon": "🎵", "title": "Song: The Tall/Short Chant", "id": "1UzPzbDYRbdteiw68v5tZJRmUPcrUBGBp"}, {"icon": "🔊", "title": "Phonics Time", "id": "1oueXFxAahM6Dd0k0y311D7RzqJ-KkReo"}]}, {"unit": 10, "name": "Around Town", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1JFJuqtaoMTfteNSmj5cYjQePkVZIY-sG"}, {"icon": "🔤", "title": "Word Time", "id": "1ctSEaZGkc2gDOScZKmo9JyX0C9R22C8s"}, {"icon": "✏️", "title": "Practice Time", "id": "1tPLL4j_IqQpL7KDoduEmCjqNA_LZ02ZE"}, {"icon": "🎵", "title": "Song: The Work Song", "id": "14pkoa66rmMQbty-PpkYlT8QQMl6DP-QR"}, {"icon": "🔊", "title": "Phonics Time", "id": "1f_0vRkNEKTGvQY4yMuMbszSx1LYN3COu"}]}, {"unit": 11, "name": "In Annie's Yard", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1M9RO4c5BO-XRP2lDuoivIYEs0YA5PAyP"}, {"icon": "🔤", "title": "Word Time", "id": "1BtjKc7D5gbWA9ijLq6use9E7rej6emOm"}, {"icon": "✏️", "title": "Practice Time", "id": "1HYH3Yml0OWEeVQHzZNOvgyuZWqOg6zEF"}, {"icon": "🎵", "title": "Song: She Can Ride a Bike", "id": "1MYyIB-0X5XaPyFnl1Q1AgcJSPSRgRYI0"}, {"icon": "🔊", "title": "Phonics Time", "id": "1-Ul8U8y10IGaHuukHeM_3pqyOPFn7u6T"}]}, {"unit": 12, "name": "At the Park", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1PQaMJkpWzo3xuUsaHHTYE3AFcNGrfa6u"}, {"icon": "🔤", "title": "Word Time", "id": "1R1KaVFBtbDwd79xmYRSkWTbBLHRG3cg8"}, {"icon": "✏️", "title": "Practice Time", "id": "1X3hLpDYcAmEoaqVroqCwe9NeHy3RKr5p"}, {"icon": "🎵", "title": "Song: The Kite Song", "id": "1cJb_10u9zIy1Xu5GJrDygzoWXVb29AZr"}, {"icon": "🔊", "title": "Phonics Time", "id": "1I4Vy1zHxyWMoCFCW2CGFRFzYdwNSsvC1"}]}];
-const unitsEl = document.getElementById("units"), list = document.getElementById("list");
-function show(u) {
-  [...unitsEl.children].forEach((b,i)=>b.classList.toggle("on", (u===0 && i===0) || i===u));
-  list.innerHTML = "";
-  data.filter(d => u===0 || d.unit===u).forEach(d => {
-    const h = document.createElement("h2");
-    h.textContent = `Unit ${d.unit} · ${d.name}`;
-    list.appendChild(h);
-    d.tracks.forEach(t => {
-      const div = document.createElement("div");
-      div.className = "track";
-      div.innerHTML = `<div class="row"><span></span><button class="play">▶ Play</button></div>`;
-      div.querySelector("span").textContent = `${t.icon} ${t.title}`;
-      div.querySelector("button").onclick = e => {
-        document.querySelectorAll(".track iframe").forEach(f => f.remove());
-        document.querySelectorAll(".play").forEach(b => b.style.display = "");
-        const f = document.createElement("iframe");
-        f.src = `https://drive.google.com/file/d/${t.id}/preview`;
-        f.allow = "autoplay";
-        div.appendChild(f);
-        e.target.style.display = "none";
-      };
-      list.appendChild(div);
-    });
-  });
+const DATA = {"units": ["In the Neighborhood", "In the Meadow", "On the Farm", "At the Stationery Store", "At School", "In Gym Class", "At the Food Court", "At the Supermarket", "At the Circus", "Around Town", "In Annie's Yard", "At the Park"], "tracks": [{"u": 1, "icon": "💬", "title": "Conversation Time", "song": false, "file": "01 Unit 1 In The Neighborfood Conversation Time A Listen And Repeart.mp3"}, {"u": 1, "icon": "🔤", "title": "Word Time", "song": false, "file": "02 Unit 1 In The Neighborfood Word Time A Listen And Repeart.mp3"}, {"u": 1, "icon": "✏️", "title": "Practice Time", "song": false, "file": "03 Unit 1 In The Neighborfood Practice Time A Listen And Repeat.mp3"}, {"u": 1, "icon": "🎵", "title": "Song: The Ted and Annie Song", "song": true, "file": "04 Unit 1 In The Neighborfood Practice Time D Listen And Sing along(The Ted And Annie Song).mp3"}, {"u": 1, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "05 Unit 1 In The Neighborfood Phonics Time A Listen And Repeat.mp3"}, {"u": 2, "icon": "💬", "title": "Conversation Time", "song": false, "file": "06 Unit 2 In The Meadow Conversation Time A Listen And Repeart.mp3"}, {"u": 2, "icon": "🔤", "title": "Word Time", "song": false, "file": "07 Unit 2 In The Meadow Word Time A Listen And Repeart.mp3"}, {"u": 2, "icon": "✏️", "title": "Practice Time", "song": false, "file": "08 Unit 2 In The Meadow Practice Time A Listen And Repeat.mp3"}, {"u": 2, "icon": "🎵", "title": "Song: This Is a Flower", "song": true, "file": "09 Unit 2 In The Meadow Practice Time D Listen And Sing along(This Is A Flower).mp3"}, {"u": 2, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "10 Unit 2 In The Meadow Phonics Time A Listen And Repeat.mp3"}, {"u": 3, "icon": "💬", "title": "Conversation Time", "song": false, "file": "11 Unit 3 On The Farm Conversation Time A Listen And Repeart.mp3"}, {"u": 3, "icon": "🔤", "title": "Word Time", "song": false, "file": "12 Unit 3 On The Farm Word Time A Listen And Repeart.mp3"}, {"u": 3, "icon": "✏️", "title": "Practice Time", "song": false, "file": "13 Unit 3 On The Farm Practice Time A Listen And Repeat.mp3"}, {"u": 3, "icon": "🎵", "title": "Song: What's This?", "song": true, "file": "14 Unit 3 On The Farm Practice Time D Listen And Sing along(What_s This_).mp3"}, {"u": 3, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "15 Unit 3 On The Farm Phonics Time A Listen And Repeat.mp3"}, {"u": 4, "icon": "💬", "title": "Conversation Time", "song": false, "file": "16 Unit 4 At The Stationery Store Conversation Time A Listen And Repeart.mp3"}, {"u": 4, "icon": "🔤", "title": "Word Time", "song": false, "file": "17 Unit 4 At The Stationery Store Word Time A Listen And Repeart.mp3"}, {"u": 4, "icon": "✏️", "title": "Practice Time", "song": false, "file": "18 Unit 4 At The Stationery Store Practice Time A Listen And Repeat.mp3"}, {"u": 4, "icon": "🎵", "title": "Song: Thanks. You're Welcome.", "song": true, "file": "19 Unit 4 At The Stationery Store Practice Time D Listen And Sing along(Thanks. You_re Welcome.).mp3"}, {"u": 4, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "20 Unit 4 At The Stationery Store Phonics Time A Listen And Repeat.mp3"}, {"u": 5, "icon": "💬", "title": "Conversation Time", "song": false, "file": "21 Unit 5 At School Conversation Time A Listen And Repeart.mp3"}, {"u": 5, "icon": "🔤", "title": "Word Time", "song": false, "file": "22 Unit 5 At School Word Time A Listen And Repeart.mp3"}, {"u": 5, "icon": "✏️", "title": "Practice Time", "song": false, "file": "23 Unit 5 At School Practice Time A Listen And Repeat.mp3"}, {"u": 5, "icon": "🎵", "title": "Song: The Counting Chant", "song": true, "file": "24 Unit 5 At School Practice Time D Listen And Sing along(The Counting Chart).mp3"}, {"u": 5, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "25 Unit 5 At School Phonics Time A Listen And Repeat.mp3"}, {"u": 6, "icon": "💬", "title": "Conversation Time", "song": false, "file": "26 Unit 6 In Gym Class Conversation Time A Listen And Repeart.mp3"}, {"u": 6, "icon": "🔤", "title": "Word Time", "song": false, "file": "27 Unit 6 In Gym Class Word Time A Listen And Repeart.mp3"}, {"u": 6, "icon": "✏️", "title": "Practice Time", "song": false, "file": "28 Unit 6 In Gym Class Practice Time A Listen And Repeat.mp3"}, {"u": 6, "icon": "🎵", "title": "Song: Are You Happy?", "song": true, "file": "29 Unit 6 In Gym Class Practice Time D Listen And Sing along(Are You Happy_).mp3"}, {"u": 6, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "30 Unit 6 In Gym Class Phonics Time A Listen And Repeat.mp3"}, {"u": 7, "icon": "💬", "title": "Conversation Time", "song": false, "file": "31 Unit 7 At The Food Court Conversation Time A Listen And Repeart.mp3"}, {"u": 7, "icon": "🔤", "title": "Word Time", "song": false, "file": "32 Unit 7 At The Food Court Word Time A Listen And Repeart.mp3"}, {"u": 7, "icon": "✏️", "title": "Practice Time", "song": false, "file": "33 Unit 7 At The Food Court Practice Time A Listen And Repeat.mp3"}, {"u": 7, "icon": "🎵", "title": "Song: I Like Pizza", "song": true, "file": "34 Unit 7 At The Food Court Practice Time D Listen And Sing along(I Like Pizza).mp3"}, {"u": 7, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "35 Unit 7 At The Food Court Phonics Time A Listen And Repeat.mp3"}, {"u": 8, "icon": "💬", "title": "Conversation Time", "song": false, "file": "36 Unit 8 At The Supermarket Conversation Time A Listen And Repeart.mp3"}, {"u": 8, "icon": "🔤", "title": "Word Time", "song": false, "file": "37 Unit 8 At The Supermarket Word Time A Listen And Repeart.mp3"}, {"u": 8, "icon": "✏️", "title": "Practice Time", "song": false, "file": "38 Unit 8 At The Supermarket Practice Time A Listen And Repeat.mp3"}, {"u": 8, "icon": "🎵", "title": "Song: Yum! Yum! Yum!", "song": true, "file": "39 Unit 8 At The Supermarket Practice Time D Listen And Sing along(Yum! Yum! Yum!).mp3"}, {"u": 8, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "40 Unit 8 At The Supermarket Phonics Time A Listen And Repeat.mp3"}, {"u": 9, "icon": "💬", "title": "Conversation Time", "song": false, "file": "41 Unit 9 At The Circus Conversation Time A Listen And Repeart.mp3"}, {"u": 9, "icon": "🔤", "title": "Word Time", "song": false, "file": "42 Unit 9 At The Circus Word Time A Listen And Repeart.mp3"}, {"u": 9, "icon": "✏️", "title": "Practice Time", "song": false, "file": "43 Unit 9 At The Circus Practice Time A Listen And Repeat.mp3"}, {"u": 9, "icon": "🎵", "title": "Song: The Tall/Short Chant", "song": true, "file": "44 Unit 9 At The Circus Practice Time D Listen And Sing along(The Tall_Short Chant).mp3"}, {"u": 9, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "45 Unit 9 At The Circus Phonics Time A Listen And Repeat.mp3"}, {"u": 10, "icon": "💬", "title": "Conversation Time", "song": false, "file": "46 Unit 10 Around Town Conversation Time A Listen And Repeart.mp3"}, {"u": 10, "icon": "🔤", "title": "Word Time", "song": false, "file": "47 Unit 10 Around Town Word Time A Listen And Repeart.mp3"}, {"u": 10, "icon": "✏️", "title": "Practice Time", "song": false, "file": "48 Unit 10 Around Town Practice Time A Listen And Repeat.mp3"}, {"u": 10, "icon": "🎵", "title": "Song: The Work Song", "song": true, "file": "49 Unit 10 Around Town Practice Time D Listen And Sing along(The Work Song).mp3"}, {"u": 10, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "50 Unit 10 Around Town Phonics Time A Listen And Repeat.mp3"}, {"u": 11, "icon": "💬", "title": "Conversation Time", "song": false, "file": "51 Unit 11 In Annie_s Yard Conversation Time A Listen And Repeart.mp3"}, {"u": 11, "icon": "🔤", "title": "Word Time", "song": false, "file": "52 Unit 11 In Annie_s Yard Word Time A Listen And Repeart.mp3"}, {"u": 11, "icon": "✏️", "title": "Practice Time", "song": false, "file": "53 Unit 11 In Annie_s Yard Practice Time A Listen And Repeat.mp3"}, {"u": 11, "icon": "🎵", "title": "Song: She Can Ride a Bike", "song": true, "file": "54 Unit 11 In Annie_s Yard Practice Time D Listen And Sing along(She Can Ride O Bike).mp3"}, {"u": 11, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "55 Unit 11 In Annie_s Yard Phonics Time A Listen And Repeat.mp3"}, {"u": 12, "icon": "💬", "title": "Conversation Time", "song": false, "file": "56 Unit 12 At The Park Conversation Time A Listen And Repeart.mp3"}, {"u": 12, "icon": "🔤", "title": "Word Time", "song": false, "file": "57 Unit 12 At The Park Word Time A Listen And Repeart.mp3"}, {"u": 12, "icon": "✏️", "title": "Practice Time", "song": false, "file": "58 Unit 12 At The Park Practice Time A Listen And Repeat.mp3"}, {"u": 12, "icon": "🎵", "title": "Song: The Kite Song", "song": true, "file": "59 Unit 12 At The Park Practice Time D Listen And Sing along(The Kite Song).mp3"}, {"u": 12, "icon": "🔊", "title": "Phonics Time", "song": false, "file": "60 Unit 12 At The Park Phonics Time A Listen And Repeat.mp3"}]};
+const T = DATA.tracks;
+const player = document.getElementById("player"), bar = document.getElementById("bar");
+let queue = [], pos = 0, queueName = "";
+
+function name(t){ return `Unit ${t.u} · ${t.title}`; }
+function play(list, start, label){
+  queue = list; pos = start || 0; queueName = label;
+  load();
 }
-const all = document.createElement("button"); all.textContent = "All"; all.onclick = () => show(0); unitsEl.appendChild(all);
-data.forEach(d => { const b = document.createElement("button"); b.textContent = "Unit " + d.unit; b.onclick = () => show(d.unit); unitsEl.appendChild(b); });
+function load(){
+  const t = queue[pos];
+  player.src = encodeURI(t.file);
+  player.play().catch(()=>{});
+  bar.classList.add("show");
+  document.getElementById("label").textContent = queue.length > 1 ? `${queueName} — ${pos+1} of ${queue.length}` : queueName;
+  document.getElementById("nowTitle").textContent = `${t.icon} ${name(t)}`;
+  document.querySelectorAll(".track").forEach(el => el.classList.toggle("now", el.dataset.file === t.file));
+}
+player.addEventListener("ended", () => { if (pos < queue.length - 1) { pos++; load(); } });
+document.getElementById("next").onclick = () => { if (pos < queue.length - 1) { pos++; load(); } };
+document.getElementById("prev").onclick = () => { if (player.currentTime > 3 || pos === 0) { player.currentTime = 0; } else { pos--; load(); } };
+
+const quick = {
+  "songs": [T.filter(t => t.song), "All Songs"],
+  "1-3": [T.filter(t => t.u <= 3), "Units 1–3"],
+  "4-6": [T.filter(t => t.u >= 4 && t.u <= 6), "Units 4–6"],
+  "7-9": [T.filter(t => t.u >= 7 && t.u <= 9), "Units 7–9"],
+  "10-12": [T.filter(t => t.u >= 10), "Units 10–12"],
+  "all": [T, "Everything"]
+};
+document.querySelectorAll(".qbtn").forEach(b => b.onclick = () => { const [l, n] = quick[b.dataset.q]; play(l, 0, n); });
+
+const unitsEl = document.getElementById("units"), list = document.getElementById("list");
+function show(u){
+  [...unitsEl.children].forEach((b,i) => b.classList.toggle("on", i === u - 1));
+  list.innerHTML = "";
+  const h = document.createElement("div"); h.className = "uhead";
+  h.textContent = `Unit ${u} · ${DATA.units[u-1]}`; list.appendChild(h);
+  const ut = T.filter(t => t.u === u);
+  ut.forEach((t, i) => {
+    const d = document.createElement("div");
+    d.className = "track" + (t.song ? " song" : "");
+    d.dataset.file = t.file;
+    d.innerHTML = `<span></span><button>▶ Play</button>`;
+    d.querySelector("span").textContent = `${t.icon} ${t.title}`;
+    d.querySelector("button").onclick = () => play(ut, i, `Unit ${u}`);
+    list.appendChild(d);
+  });
+  const cur = queue[pos]; if (cur) document.querySelectorAll(".track").forEach(el => el.classList.toggle("now", el.dataset.file === cur.file));
+}
+DATA.units.forEach((n, i) => { const b = document.createElement("button"); b.textContent = "Unit " + (i+1); b.onclick = () => show(i+1); unitsEl.appendChild(b); });
 show(1);
 </script>
 </body>
