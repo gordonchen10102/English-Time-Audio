@@ -124,7 +124,8 @@
 
   // ---------- turn file names into tracks ----------
   const FIXES = [[/Neighborfood/g, "Neighborhood"], [/Counting Chart/g, "Counting Chant"], [/Ride O Bike/g, "Ride a Bike"],
-                 [/Campasite/g, "Campsite"], [/What Aer You/g, "What Are You"]];
+                 [/Campasite/g, "Campsite"], [/What Aer You/g, "What Are You"],
+                 [/\bJome\b/g, "Home"], [/\bPaoer\b/g, "Paper"], [/Oh,No!/g, "Oh, No!"]];
   const tidy = s => FIXES.reduce((a, [re, r]) => a.replace(re, r),
     s.replace(/_(?=(s|re|t|ll|m|ve|d)\b)/gi, "'").replace(/_$/, "?").replace(/_/g, "/").trim());
   const icons = [[/conversation/i, "💬"], [/word/i, "🔤"], [/practice/i, "✏️"], [/phonics/i, "🔊"], [/story|reading/i, "📖"], [/review/i, "🔁"]];
