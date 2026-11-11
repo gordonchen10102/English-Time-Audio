@@ -223,7 +223,8 @@
     const T = files.map(parse).filter(Boolean).sort((a, b) => a.num - b.num || a.file.localeCompare(b.file));
     if (!T.length) { main.innerHTML = `<div class="msg">Audio for English Time ${L.n} is coming soon. 🎧</div>`; return; }
     // add the letter (A, B…) when one unit has two tracks with the same name
-    T.forEach(t => { if (!t.song && t.letter && T.some(o => o !== t && o.u === t.u && o.title === t.title)) t.title += ` ${t.letter}`; });
+    const dup = T.map(t => !t.song && t.letter && T.some(o => o !== t && o.u === t.u && o.title === t.title));
+    T.forEach((t, i) => { if (dup[i]) t.title += ` ${t.letter}`; });
     const units = [...new Set(T.map(t => t.u))].sort((a, b) => a - b);
     const unitName = u => (T.find(t => t.u === u && t.unitName) || {}).unitName || "";
 
