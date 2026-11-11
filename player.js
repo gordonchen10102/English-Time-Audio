@@ -3,7 +3,16 @@
    The page lists the MP3s in its own folder and builds itself from their names, e.g.
    "04 Unit 1 In The Neighborhood Practice Time D Listen And Sing along(Song Title).mp3" */
 (function () {
-  const L = window.LEVEL;
+  // Colours match each Student Book cover.
+  const PALETTE = {
+    1: { btn: "#2563a8", headDark: "#7fb3ec", soft: "#e3eefa", softDark: "#1f2c3b", song: "#c2571a" }, // blue
+    2: { btn: "#c22a45", headDark: "#f28d9b", soft: "#fbe4e8", softDark: "#3c2228", song: "#2563a8" }, // red
+    3: { btn: "#2e8540", headDark: "#7fd08b", soft: "#e2f3e4", softDark: "#1f3323", song: "#c2571a" }, // green
+    4: { btn: "#5b3fa8", headDark: "#a996ea", soft: "#ebe6f8", softDark: "#29243f", song: "#c2571a" }, // purple
+    5: { btn: "#c84f14", headDark: "#f5a06a", soft: "#fdeadf", softDark: "#3d2a1f", song: "#2563a8" }, // orange
+    6: { btn: "#0f7c80", headDark: "#6fd0d3", soft: "#dff3f3", softDark: "#1d3536", song: "#c2571a" }  // teal
+  };
+  const L = Object.assign({}, window.LEVEL, PALETTE[window.LEVEL.n] || {});
   const css = `
   :root { --bg:#f7f5ef; --card:#fff; --text:#222; --muted:#666; --btn:${L.btn}; --head:${L.btn}; --soft:${L.soft}; --song:${L.song}; }
   @media (prefers-color-scheme: dark) {
@@ -11,9 +20,11 @@
   }
   * { box-sizing:border-box; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); padding-bottom:150px; }
-  header { padding:24px 16px 4px; text-align:center; }
-  h1 { margin:0 0 4px; font-size:1.8rem; color:var(--head); }
-  header p { margin:0; color:var(--muted); }
+  header { background:var(--btn); color:#fff; padding:22px 16px 20px; text-align:center; }
+  h1 { margin:0 0 6px; font-size:1.9rem; color:#fff; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .badge { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:50%;
+           background:#fff; color:var(--btn); font-size:1.7rem; font-weight:800; box-shadow:0 2px 6px rgba(0,0,0,.2); }
+  header p { margin:0; color:rgba(255,255,255,.92); font-size:1rem; }
   main { max-width:720px; margin:0 auto; padding:16px; }
   .quick { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); border-top:6px solid var(--btn); }
   .quick h2 { margin:0 0 4px; font-size:1.2rem; }
@@ -45,8 +56,9 @@
   footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }`;
   document.head.insertAdjacentHTML("beforeend", `<style>${css}</style>`);
   document.title = `English Time ${L.n} Audio`;
+  document.head.insertAdjacentHTML("beforeend", `<meta name="theme-color" content="${L.btn}">`);
   document.body.innerHTML = `
-  <header><h1>English Time ${L.n} 🎧</h1><p>Listen and practise at home</p></header>
+  <header><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practise at home 🎧</p></header>
   <main id="main"><div class="msg">Loading…</div></main>
   <footer>For students and parents of our class</footer>
   <div class="bar" id="bar"><div class="inner">
@@ -89,7 +101,9 @@
   }
 
   // ---------- turn file names into tracks ----------
-  const tidy = s => s.replace(/_(?=(s|re|t|ll|m|ve|d)\b)/gi, "'").replace(/_$/, "?").replace(/_/g, "/").trim();
+  const FIXES = [[/Neighborfood/g, "Neighborhood"], [/Counting Chart/g, "Counting Chant"], [/Ride O Bike/g, "Ride a Bike"]];
+  const tidy = s => FIXES.reduce((a, [re, r]) => a.replace(re, r),
+    s.replace(/_(?=(s|re|t|ll|m|ve|d)\b)/gi, "'").replace(/_$/, "?").replace(/_/g, "/").trim());
   const icons = [[/conversation/i, "💬"], [/word/i, "🔤"], [/practice/i, "✏️"], [/phonics/i, "🔊"], [/story|reading/i, "📖"], [/review/i, "🔁"]];
   function parse(file) {
     const m = file.match(/^(\d+)\s+Unit\s+(\d+)\s+(.*)\.mp3$/i);
