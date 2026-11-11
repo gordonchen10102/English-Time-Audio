@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Time 1 Audio</title>
+<style>
+  :root { --bg:#f7f5ef; --card:#fff; --text:#222; --muted:#666; --accent:#2f7d5b; --soft:#e6f2ec; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1b1d1c; --card:#262927; --text:#eee; --muted:#aaa; --accent:#5cc49a; --soft:#2d3a33; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:28px 16px 8px; text-align:center; }
+  h1 { margin:0 0 6px; font-size:1.8rem; color:var(--accent); }
+  header p { margin:0; color:var(--muted); }
+  main { max-width:720px; margin:0 auto; padding:16px; }
+  .units { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  .units button { border:0; border-radius:999px; padding:8px 14px; font-size:.95rem; cursor:pointer;
+                  background:var(--soft); color:var(--text); }
+  .units button.on { background:var(--accent); color:#fff; }
+  h2 { font-size:1.15rem; margin:22px 0 10px; color:var(--accent); }
+  .track { background:var(--card); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+           box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .row span { font-size:1rem; }
+  .play { border:0; border-radius:10px; padding:8px 14px; background:var(--accent); color:#fff;
+          font-size:.95rem; cursor:pointer; white-space:nowrap; }
+  iframe { width:100%; height:64px; border:0; margin-top:10px; border-radius:8px; }
+  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>English Time 1 🎧</h1>
+  <p>Choose a unit, then tap Play</p>
+</header>
+<main>
+  <div class="units" id="units"></div>
+  <div id="list"></div>
+</main>
+<footer>For students and parents of our class</footer>
+<script>
+const data = [{"unit": 1, "name": "In the Neighborhood", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1DPPtZN5U-5ziUOvKztOKli-d6YNU5yVm"}, {"icon": "🔤", "title": "Word Time", "id": "19fOqfHY21mEtnKnRcOCuCsRecEGUXECG"}, {"icon": "✏️", "title": "Practice Time", "id": "17ltUcRGhzmVrSbrNKA3w8wW9VcX0QQsJ"}, {"icon": "🎵", "title": "Song: The Ted and Annie Song", "id": "1VnPu-69-BzG6wsh1k6RhkuIMx4bG_7Rh"}, {"icon": "🔊", "title": "Phonics Time", "id": "1YSW1pE6WwT_sMCZTP93Sv7kAS8gLuyhI"}]}, {"unit": 2, "name": "In the Meadow", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1UMjToMn_KOwFaFhHltgfrnC1pSdjNIK_"}, {"icon": "🔤", "title": "Word Time", "id": "1euykAW6LkSNNj1R57UBL0mA6anE4GfKz"}, {"icon": "✏️", "title": "Practice Time", "id": "14Kb92rYoXsVeIdZ3_6K7q6fiNKbesuBm"}, {"icon": "🎵", "title": "Song: This Is a Flower", "id": "1aCKypyqHXX5SIiaGqNJSRCisBJvxQRtO"}, {"icon": "🔊", "title": "Phonics Time", "id": "1sbj0rVrqbcXiZagmtjcKH9xH7QJHA2FP"}]}, {"unit": 3, "name": "On the Farm", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1iGfICS42OS3ysYDFMUtvA3BKFmZ6EK7i"}, {"icon": "🔤", "title": "Word Time", "id": "1cle12DrLsC9pxXdHQ9DN79mDXMXd4MdS"}, {"icon": "✏️", "title": "Practice Time", "id": "1NtaYhY1vLjPt6r1t6geHDCstnaYAPm_l"}, {"icon": "🎵", "title": "Song: What's This?", "id": "1Cz3gde8MQxLPiZLslHLYUjJPxXKSw8qG"}, {"icon": "🔊", "title": "Phonics Time", "id": "1aQTPQozDTikuMCDV3wOsio9ZP4aHPWLN"}]}, {"unit": 4, "name": "At the Stationery Store", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "10lbrU5xAxkIT4JgprGp_Vjx0ieMkjKFi"}, {"icon": "🔤", "title": "Word Time", "id": "1wrGYWn_Ri7JIPu2muaghDp_uDERbCSw1"}, {"icon": "✏️", "title": "Practice Time", "id": "1zwS7DQyvfVDS0iwdXI4WuHDlzgqWo2H9"}, {"icon": "🎵", "title": "Song: Thanks. You're Welcome.", "id": "1nUUfckyCuDP-MthAvbGNbePczdipPR_A"}, {"icon": "🔊", "title": "Phonics Time", "id": "1k3zcDqxSkoJC-RDxCVLZKb-eqmGTLk2T"}]}, {"unit": 5, "name": "At School", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1u6mLVrlNSev3bAVIMG5KZ-MPisIbOIfM"}, {"icon": "🔤", "title": "Word Time", "id": "1JHnTkk5C6gortccpC2JorWcgX3RwfEEB"}, {"icon": "✏️", "title": "Practice Time", "id": "1uDyNG1dspUuRHe5UpNOVsE4-yjH_Ryuk"}, {"icon": "🎵", "title": "Song: The Counting Chant", "id": "1ZRqt7CskkXxZrMVd4v1JI2ECZyOx55I8"}, {"icon": "🔊", "title": "Phonics Time", "id": "1T2jRqPr3RyiPxL7sXGjM-vUJLUm8NLuK"}]}, {"unit": 6, "name": "In Gym Class", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1kwWGOQaXInVPPFDepnq7pcUZs_9cwz_K"}, {"icon": "🔤", "title": "Word Time", "id": "1jxVjUkHzlI-I1oV0xcZDJO8TWetl3iPW"}, {"icon": "✏️", "title": "Practice Time", "id": "1pdKD-Ivgc-MnqdtXvkO41YUZ9S3QN8kk"}, {"icon": "🎵", "title": "Song: Are You Happy?", "id": "13VYvASJZ6L6CL4tJr695CyJkivImtMYl"}, {"icon": "🔊", "title": "Phonics Time", "id": "1dt5EHR6JNGXyJ1vrgfDZaDxmy8b83cFr"}]}, {"unit": 7, "name": "At the Food Court", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1OSUhB3drFuKy8BLCHhhGjpB2VwO0oN-K"}, {"icon": "🔤", "title": "Word Time", "id": "1_UqcBZihB-VkkTDsHGxJX0FTpwGHih-K"}, {"icon": "✏️", "title": "Practice Time", "id": "1VBANkwuxcOEfsd2XQtP8BVHudaW3mZPd"}, {"icon": "🎵", "title": "Song: I Like Pizza", "id": "13SoXkSd2883HewDxcx5rfgSgyGYmjJDF"}, {"icon": "🔊", "title": "Phonics Time", "id": "1x7FitagChITy_x5Nj2VweDZWbClVRuo_"}]}, {"unit": 8, "name": "At the Supermarket", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1tUFo4z2sOMtbYzhyOIhwhWgfSJ3c_6Bt"}, {"icon": "🔤", "title": "Word Time", "id": "1rfyWUWHGlr1socRJYcbFob5xvMUWUfSx"}, {"icon": "✏️", "title": "Practice Time", "id": "1OsivVjuo7iK6J2DGbFjD1_hYFcz8JMQx"}, {"icon": "🎵", "title": "Song: Yum! Yum! Yum!", "id": "1sD4Pb8nygsX2l2Cd9fq-0IAvSBps2oWU"}, {"icon": "🔊", "title": "Phonics Time", "id": "1jutvH4qCzVt9D44lmlqJ5bydDRTA394s"}]}, {"unit": 9, "name": "At the Circus", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1FWa-zn_kklXEqxK4aH4dx8-6MvC1Rc6k"}, {"icon": "🔤", "title": "Word Time", "id": "1ADe1QHfsbXByWtw7R-M9QFOzlWWmhewT"}, {"icon": "✏️", "title": "Practice Time", "id": "1OJNz5hagod29dA3yQAD0jZja4rGx18H0"}, {"icon": "🎵", "title": "Song: The Tall/Short Chant", "id": "1UzPzbDYRbdteiw68v5tZJRmUPcrUBGBp"}, {"icon": "🔊", "title": "Phonics Time", "id": "1oueXFxAahM6Dd0k0y311D7RzqJ-KkReo"}]}, {"unit": 10, "name": "Around Town", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1JFJuqtaoMTfteNSmj5cYjQePkVZIY-sG"}, {"icon": "🔤", "title": "Word Time", "id": "1ctSEaZGkc2gDOScZKmo9JyX0C9R22C8s"}, {"icon": "✏️", "title": "Practice Time", "id": "1tPLL4j_IqQpL7KDoduEmCjqNA_LZ02ZE"}, {"icon": "🎵", "title": "Song: The Work Song", "id": "14pkoa66rmMQbty-PpkYlT8QQMl6DP-QR"}, {"icon": "🔊", "title": "Phonics Time", "id": "1f_0vRkNEKTGvQY4yMuMbszSx1LYN3COu"}]}, {"unit": 11, "name": "In Annie's Yard", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1M9RO4c5BO-XRP2lDuoivIYEs0YA5PAyP"}, {"icon": "🔤", "title": "Word Time", "id": "1BtjKc7D5gbWA9ijLq6use9E7rej6emOm"}, {"icon": "✏️", "title": "Practice Time", "id": "1HYH3Yml0OWEeVQHzZNOvgyuZWqOg6zEF"}, {"icon": "🎵", "title": "Song: She Can Ride a Bike", "id": "1MYyIB-0X5XaPyFnl1Q1AgcJSPSRgRYI0"}, {"icon": "🔊", "title": "Phonics Time", "id": "1-Ul8U8y10IGaHuukHeM_3pqyOPFn7u6T"}]}, {"unit": 12, "name": "At the Park", "tracks": [{"icon": "💬", "title": "Conversation Time", "id": "1PQaMJkpWzo3xuUsaHHTYE3AFcNGrfa6u"}, {"icon": "🔤", "title": "Word Time", "id": "1R1KaVFBtbDwd79xmYRSkWTbBLHRG3cg8"}, {"icon": "✏️", "title": "Practice Time", "id": "1X3hLpDYcAmEoaqVroqCwe9NeHy3RKr5p"}, {"icon": "🎵", "title": "Song: The Kite Song", "id": "1cJb_10u9zIy1Xu5GJrDygzoWXVb29AZr"}, {"icon": "🔊", "title": "Phonics Time", "id": "1I4Vy1zHxyWMoCFCW2CGFRFzYdwNSsvC1"}]}];
+const unitsEl = document.getElementById("units"), list = document.getElementById("list");
+function show(u) {
+  [...unitsEl.children].forEach((b,i)=>b.classList.toggle("on", (u===0 && i===0) || i===u));
+  list.innerHTML = "";
+  data.filter(d => u===0 || d.unit===u).forEach(d => {
+    const h = document.createElement("h2");
+    h.textContent = `Unit ${d.unit} · ${d.name}`;
+    list.appendChild(h);
+    d.tracks.forEach(t => {
+      const div = document.createElement("div");
+      div.className = "track";
+      div.innerHTML = `<div class="row"><span></span><button class="play">▶ Play</button></div>`;
+      div.querySelector("span").textContent = `${t.icon} ${t.title}`;
+      div.querySelector("button").onclick = e => {
+        document.querySelectorAll(".track iframe").forEach(f => f.remove());
+        document.querySelectorAll(".play").forEach(b => b.style.display = "");
+        const f = document.createElement("iframe");
+        f.src = `https://drive.google.com/file/d/${t.id}/preview`;
+        f.allow = "autoplay";
+        div.appendChild(f);
+        e.target.style.display = "none";
+      };
+      list.appendChild(div);
+    });
+  });
+}
+const all = document.createElement("button"); all.textContent = "All"; all.onclick = () => show(0); unitsEl.appendChild(all);
+data.forEach(d => { const b = document.createElement("button"); b.textContent = "Unit " + d.unit; b.onclick = () => show(d.unit); unitsEl.appendChild(b); });
+show(1);
+</script>
+</body>
+</html>
