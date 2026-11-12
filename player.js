@@ -14,6 +14,7 @@
     6: { btn: "#0f7c80", headDark: "#6fd0d3", soft: "#dff3f3", softDark: "#1d3536", song: "#c2571a" }  // teal
   };
   const L = Object.assign({}, window.LEVEL, PALETTE[window.LEVEL.n || 0] || {});
+  const LOGO = new URL("logo.png", document.currentScript.src).href;
   const BOOKS = [[1, 12], [2, 12], [3, 12], [4, 12], [5, 10], [6, 10]];
   // Passcode check (stored as a hash, remembered on each device once entered).
   const PASS_HASH = "c570baa958a5ca0b0aa22d4e58a240f7876ce19b2afe538bed626f07db577849";
@@ -70,7 +71,11 @@
   .bar .ctrls button { border:0; border-radius:10px; width:44px; height:40px; font-size:1.1rem; background:var(--soft); color:var(--text); cursor:pointer; }
   .bar audio { flex:1; min-width:0; height:40px; }
   .msg { text-align:center; color:var(--muted); padding:40px 16px; font-size:1.05rem; }
-  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }`;
+  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:24px 16px; }
+  .wm { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.07;
+        background:url("${LOGO}") center 55% / min(70vw, 380px) auto no-repeat; }
+  @media (prefers-color-scheme: dark) { .wm { opacity:.09; } }
+  .bar { z-index:60; }`;
   document.head.insertAdjacentHTML("beforeend", `<style>${css}</style>`);
   document.title = L.start ? "English Time Audio" : `English Time ${L.n} Audio`;
   document.head.insertAdjacentHTML("beforeend", `<meta name="robots" content="noindex, nofollow">`);
@@ -81,6 +86,7 @@
       : `<a class="back" href="${L.home || "../"}">← All levels</a><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practise at home 🎧</p>`}</header>
   <main id="main"><div class="msg">Loading…</div></main>
   <footer>For students and parents of our class</footer>
+  <div class="wm" aria-hidden="true"></div>
   <div class="bar" id="bar"><div class="inner">
     <div class="label" id="label"></div><div class="title" id="nowTitle"></div>
     <div class="ctrls"><button id="prev" aria-label="Previous">⏮</button><audio id="player" controls></audio><button id="next" aria-label="Next">⏭</button></div>
