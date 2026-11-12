@@ -83,7 +83,7 @@
   document.body.innerHTML = `
   <header>${L.start
       ? `<h1>English Time 🎧</h1><p>Audio for listening at home</p>`
-      : `<a class="back" href="${L.home || "../"}">← All levels</a><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practise at home 🎧</p>`}</header>
+      : `<a class="back" href="${L.home || "../"}">← All levels</a><h1>English Time <span class="badge">${L.n}</span></h1><p>Level ${L.n} · Listen and practice at home 🎧</p>`}</header>
   <main id="main"><div class="msg">Loading…</div></main>
   <footer>For students and parents of our class</footer>
   <div class="wm" aria-hidden="true"></div>
