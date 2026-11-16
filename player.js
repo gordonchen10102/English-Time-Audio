@@ -102,27 +102,24 @@
 
   // ---------- file list ----------
   async function listFiles() {
-    const key = `et-files-${repo}-${folder}`;
-    try {
-      const c = JSON.parse(localStorage.getItem(key) || "null");
-      if (c && Date.now() - c.t < 3600e3 && c.files.length) return c.files;
-    } catch (e) {}
+    // Sources, freshest first: GitHub's live listing (remembered 5 min to stay under its rate limit),
+    // then the files.json list kept next to the audio, then the last list this device saw.
+    const key = `et-files-v2-${repo}-${folder}`;
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) {}
+    if (cached && Date.now() - cached.t < 300e3 && cached.files.length) return cached.files;
     let files = null;
     try {
-      const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}?ref=main`);
+      const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}?ref=main`, { cache: "no-store" });
       if (r.ok) files = (await r.json()).filter(f => f.type === "file").map(f => f.name);
     } catch (e) {}
     if (!files) {
       try {
-        const r = await fetch(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${repo}@main?structure=flat`);
-        if (r.ok) files = (await r.json()).files.map(f => f.name)
-          .filter(n => n.startsWith(`/${folder}/`) && n.split("/").length === 3).map(n => n.split("/")[2]);
+        const r = await fetch(prefix + "files.json?t=" + Date.now(), { cache: "no-store" });
+        if (r.ok) files = await r.json();
       } catch (e) {}
     }
-    if (!files) {
-      try { const c = JSON.parse(localStorage.getItem(key) || "null"); if (c) return c.files; } catch (e) {}
-      return null;
-    }
+    if (!files) return cached ? cached.files : null;
     files = files.filter(n => /\.mp3$/i.test(n));
     if (files.length) { try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), files })); } catch (e) {} }
     return files;
@@ -240,7 +237,7 @@
     if (songs.length) q.push([`<button class="qbtn songs">🎵 All Songs<small>${songs.length} songs</small></button>`, songs, "All Songs"]);
     for (const [a, b] of groups(L.units)) {
       const g = T.filter(t => t.u >= a && t.u <= b);
-      if (g.length) q.push([`<button class="qbtn">Units ${a}–${b}<small>${g.length} tracks</small></button>`, g, `Units ${a}–${b}`]);
+      if (g.length) q.push([`<button class="qbtn">Units ${a}–${b}<small>${g.length} track${g.length === 1 ? "" : "s"}</small></button>`, g, `Units ${a}–${b}`]);
     }
     q.push([`<button class="qbtn all">Play Everything<small>all ${T.length} tracks</small></button>`, T, "Everything"]);
 
